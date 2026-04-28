@@ -11,7 +11,7 @@ COPY frontend/ ./
 # ---------- 开发阶段 ----------
 FROM base AS dev
 EXPOSE 5173
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]
+CMD ["npm", "run", "dev"]
 
 # ---------- 构建阶段 ----------
 FROM base AS builder

@@ -71,8 +71,8 @@ services:
     environment:
       DOCKER: "true"
     volumes:
-      - ./frontend:/app/frontend          # 挂载整个前端目录，便于 HMR
-      - /app/frontend/node_modules        # 匿名卷，避免覆盖
+      - ./frontend:/app                   # 挂载整个前端目录，便于 HMR
+      - /app/node_modules                 # 匿名卷，避免覆盖
     ports:
       - "${FRONTEND_PORT:-5173}:5173"
     depends_on:

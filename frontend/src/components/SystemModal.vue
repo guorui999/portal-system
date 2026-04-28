@@ -1,21 +1,14 @@
 <template>
-  <a-modal
-    :open="open"
-    :title="isEdit ? '编辑系统' : '新增系统'"
-    @cancel="handleCancel"
-    :confirmLoading="loading"
-    width="800px"
-    class="system-modal"
-    :footer="null"
-    wrapClassName="system-modal-wrap"
-  >
-    <a-form ref="formRef" :model="formData" :rules="rules" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" class="system-form">
+  <a-modal :open="open" :title="isEdit ? '编辑' : '新增'" @cancel="handleCancel" :confirmLoading="loading" width="800px"
+    class="system-modal" :footer="null" wrapClassName="system-modal-wrap">
+    <a-form ref="formRef" :model="formData" :rules="rules" :label-col="{ style: { width: '50px' } }"
+      :wrapper-col="{ style: { marginLeft: '10px' } }" class="system-form">
       <a-form-item label="地址" name="externalUrl" required>
-        <a-input v-model:value="formData.externalUrl" placeholder="请输入跳转地址" />
+        <a-input v-model:value="formData.externalUrl" placeholder="请输入地址" />
       </a-form-item>
 
       <a-form-item label="名称" name="name" required>
-        <a-input v-model:value="formData.name" placeholder="请输入系统名称" />
+        <a-input v-model:value="formData.name" placeholder="请输入名称" />
       </a-form-item>
 
       <a-form-item label="图片" name="imageUrl" required>
@@ -23,26 +16,31 @@
           <a-upload :customRequest="handleUpload" :showUploadList="false" accept="image/png,image/jpeg,image/jpg">
             <div class="upload-box">
               <template v-if="!formData.imageUrl">
-                <PictureOutlined class="upload-icon" />
-                <div class="upload-text">上传图片</div>
+                <div class="upload-placeholder">
+                  <img :src="nophotoImage" class="nophoto-image" alt="nophoto" />
+                  <a-button class="upload-button">
+                    <img :src="uploadIcon" class="button-icon" alt="upload" />
+                    上传图片
+                  </a-button>
+                </div>
               </template>
               <template v-else>
                 <img class="upload-preview" :src="getImageUrl(formData.imageUrl)" alt="预览" />
               </template>
             </div>
           </a-upload>
-          <div class="upload-tip">背景图片格式支持 png/jpg</div>
+          <div class="upload-tip">背景图片格式要求为：png/jpg</div>
 
-          <a-button v-if="formData.imageUrl" type="text" danger class="upload-remove" @click="formData.imageUrl = ''">
-            <DeleteOutlined />
-          </a-button>
+          <div v-if="formData.imageUrl" class="upload-remove" @click="formData.imageUrl = ''">
+            <img :src="deleteIcon" class="delete-icon" alt="delete" />
+          </div>
         </div>
       </a-form-item>
     </a-form>
 
     <div class="system-footer">
-      <a-button @click="handleCancel">取消</a-button>
-      <a-button v-if="isEdit && props.system" danger @click="handleDelete">删除</a-button>
+      <a-button class="cancel-btn" @click="handleCancel">取消</a-button>
+      <a-button v-if="isEdit && props.system" class="delete-btn" @click="handleDelete">删除</a-button>
       <a-button type="primary" :loading="loading" @click="handleSubmit">确定</a-button>
     </div>
   </a-modal>
@@ -50,7 +48,10 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { PictureOutlined, DeleteOutlined } from '@ant-design/icons-vue';
+import uploadIcon from '@/assets/images/upload.svg';
+import deleteIcon from '@/assets/images/delete.svg';
+import editIcon from '@/assets/images/edit.svg';
+import nophotoImage from '@/assets/images/nophoto.png';
 import { message } from 'ant-design-vue';
 import type { FormInstance } from 'ant-design-vue';
 import { uploadApi } from '@/api/upload';
@@ -66,6 +67,7 @@ const emit = defineEmits<{
   'update:open': [value: boolean];
   'submit': [data: any];
   'delete': [id: number];
+  'cancel': [];
 }>();
 
 const formRef = ref<FormInstance>();
@@ -82,8 +84,8 @@ const defaultFormData = {
 const formData = ref({ ...defaultFormData });
 
 const rules = {
-  name: [{ required: true, message: '请输入系统名称' }],
-  externalUrl: [{ required: true, message: '请输入跳转地址' }],
+  name: [{ required: true, message: '请输入名称' }],
+  externalUrl: [{ required: true, message: '请输入地址' }],
   imageUrl: [{ required: true, message: '请上传封面图片' }],
 };
 
@@ -108,6 +110,7 @@ const handleUpload = async ({ file }: any) => {
 
 const handleCancel = () => {
   emit('update:open', false);
+  emit('cancel');
   formData.value = { ...defaultFormData };
 };
 
@@ -160,9 +163,7 @@ watch(
 }
 
 :global(.system-modal-wrap .ant-modal-body) {
-  height: calc(640px - 55px);
   overflow: auto;
-  padding: 0 24px 12px;
 }
 
 .system-form {
@@ -171,15 +172,15 @@ watch(
 
 .upload-area {
   position: relative;
-  width: 260px;
+  width: 100%;
 }
 
 .upload-box {
-  width: 180px;
-  height: 110px;
+  width: 236px;
+  height: 132px;
   border: 1px solid #d9d9d9;
-  border-radius: 4px;
-  background: #fafafa;
+  border-radius: 8px;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -189,14 +190,54 @@ watch(
 }
 
 .upload-icon {
-  font-size: 28px;
-  color: #bfbfbf;
+  width: 28px;
+  height: 28px;
 }
 
-.upload-text {
-  margin-top: 6px;
+.delete-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.nophoto-image {
+  width: 80px;
+  height: 68px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.upload-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 80px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: rgba(51, 124, 252, 0.1);
+  color: #337cfc;
   font-size: 12px;
-  color: #1890ff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.upload-button:hover {
+  background: rgba(51, 124, 252, 0.15);
+  color: #337cfc;
+}
+
+.button-icon {
+  width: 16px;
+  height: 16px;
 }
 
 .upload-preview {
@@ -213,14 +254,54 @@ watch(
 
 .upload-remove {
   position: absolute;
-  left: 190px;
-  top: 8px;
+  left: 240px;
+  top: 0;
+  width: 24px;
+  height: 24px;
+  background: #ffffff;
+  box-shadow: rgba(0, 0, 0, 0.08) 0px 2px 8px 0px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.upload-remove:hover {
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 4px 12px 0px;
+  transform: translateY(-1px);
 }
 
 .system-footer {
+  position: absolute;
+  bottom: 32px;
+  right: 32px;
   display: flex;
-  justify-content: flex-end;
   gap: 12px;
-  padding-top: 6px;
+}
+
+.cancel-btn {
+  background: rgba(0, 0, 0, 0.05);
+  color: rgba(0, 0, 0, 0.45);
+  border: none;
+  border-radius: 4px;
+}
+
+.cancel-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.delete-btn {
+  background: rgba(245, 63, 63, 0.1);
+  color: rgba(245, 63, 63, 1);
+  border: none;
+  border-radius: 4px;
+}
+
+.delete-btn:hover {
+  background: rgba(245, 63, 63, 0.2);
+  color: rgba(245, 63, 63, 1);
 }
 </style>

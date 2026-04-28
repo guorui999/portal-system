@@ -1,11 +1,6 @@
 <template>
-  <div class="admin-page">
-    <div class="admin-bg" aria-hidden="true"></div>
-
+  <div class="admin-page" :style="bgStyle">
     <div class="admin-top">
-      <div class="admin-brand">
-        <span class="admin-brand-logo">龙建达</span>
-      </div>
 
       <div class="admin-title">
         欢迎使用统一门户（{{ systemStore.currentTarget === 'sales' ? '销售端' : '测试端' }}）
@@ -23,20 +18,15 @@
       <div class="admin-grid">
         <div v-for="system in systems" :key="system.id" class="admin-card">
           <div class="admin-card-thumb">
-            <img
-              v-if="system.imageUrl"
-              :src="getImageUrl(system.imageUrl)"
-              :alt="system.name"
-            />
+            <img v-if="system.imageUrl" :src="getImageUrl(system.imageUrl)" :alt="system.name" />
             <div v-else class="admin-card-thumb-empty">
-              <PictureOutlined />
-            </div>
-
-            <div class="admin-card-edit" @click.stop="editSystem(system)">
-              <EditOutlined />
+              <img :src="nophotoImage" class="empty-image" alt="nophoto" />
             </div>
           </div>
-          <div class="admin-card-name">{{ system.name }}</div>
+          <div class="admin-card-name-row">
+            <div class="admin-card-name">{{ system.name }}</div>
+            <img :src="editIcon" class="edit-icon" alt="edit" @click.stop="editSystem(system)" />
+          </div>
         </div>
       </div>
 
@@ -45,28 +35,23 @@
     </main>
 
     <!-- Add/Edit Modal -->
-    <SystemModal
-      v-model:open="showAddModal"
-      :is-edit="isEditing"
-      :system="currentSystem"
-      @submit="handleModalSubmit"
-      @delete="handleModalDelete"
-    />
+    <SystemModal v-model:open="showAddModal" :is-edit="isEditing" :system="currentSystem" @submit="handleModalSubmit"
+      @delete="handleModalDelete" @cancel="handleModalCancel" />
 
     <!-- Config Modal -->
-    <ConfigModal
-      v-model:open="showConfigModal"
-      :target="systemStore.currentTarget"
-    />
+    <ConfigModal v-model:open="showConfigModal" :target="systemStore.currentTarget" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
-import { PictureOutlined, EditOutlined } from '@ant-design/icons-vue';
+import { ref, onMounted, watch, computed } from 'vue';
+import nophotoImage from '@/assets/images/nophoto.png';
+import editIcon from '@/assets/images/edit.svg';
+import systemBgImage from '@/assets/images/system-bg.png';
 import { message } from 'ant-design-vue';
 import { useSystemStore } from '@/stores/system';
 import { systemsApi } from '@/api/systems';
+import { configApi } from '@/api/config';
 import SystemModal from '@/components/SystemModal.vue';
 import ConfigModal from '@/components/ConfigModal.vue';
 import type { System } from '../../types';
@@ -79,6 +64,24 @@ const showAddModal = ref(false);
 const showConfigModal = ref(false);
 const isEditing = ref(false);
 const currentSystem = ref<System | undefined>(undefined);
+const configBgImage = ref('');
+
+const bgStyle = computed(() => ({
+  backgroundImage: `url(${configBgImage.value ? getImageUrl(configBgImage.value) : systemBgImage})`,
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  backgroundRepeat: 'no-repeat',
+}));
+
+const fetchConfigBg = async () => {
+  try {
+    const config = await configApi.get(systemStore.currentTarget);
+    configBgImage.value = config?.backgroundImage || '';
+  } catch (error) {
+    console.error('Failed to fetch config:', error);
+    configBgImage.value = '';
+  }
+};
 
 const getImageUrl = (url: string) => {
   if (url.startsWith('http')) return url;
@@ -130,6 +133,11 @@ const editSystem = (system: System) => {
   showAddModal.value = true;
 };
 
+const handleModalCancel = () => {
+  isEditing.value = false;
+  currentSystem.value = undefined;
+};
+
 const handleModalDelete = async (id: number) => {
   try {
     await systemsApi.delete(id);
@@ -143,8 +151,14 @@ const handleModalDelete = async (id: number) => {
   }
 };
 
-onMounted(fetchSystems);
-watch(() => systemStore.currentTarget, fetchSystems);
+onMounted(() => {
+  fetchSystems();
+  fetchConfigBg();
+});
+watch(() => systemStore.currentTarget, () => {
+  fetchSystems();
+  fetchConfigBg();
+});
 </script>
 
 <style scoped>
@@ -152,24 +166,11 @@ watch(() => systemStore.currentTarget, fetchSystems);
   min-height: 100vh;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(180deg, #0b44b9 0%, #083a9f 100%);
-}
-
-.admin-bg {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(1200px 680px at 70% 20%, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 60%),
-    radial-gradient(900px 500px at 0% 0%, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 55%),
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0, rgba(255, 255, 255, 0.05) 1px, rgba(255, 255, 255, 0) 1px, rgba(255, 255, 255, 0) 140px);
-  opacity: 0.55;
-  transform: skewX(-12deg) translateX(-8%);
-  transform-origin: center;
 }
 
 .admin-top {
   position: relative;
-  padding: 18px 40px 0;
+  padding: 24px 84px 0;
 }
 
 .admin-brand {
@@ -184,27 +185,28 @@ watch(() => systemStore.currentTarget, fetchSystems);
 .admin-title {
   text-align: center;
   color: #fff;
-  font-size: 34px;
+  font-size: 48px;
   font-weight: 800;
   letter-spacing: 4px;
-  padding-top: 6px;
 }
 
 .admin-actions {
   position: absolute;
-  right: 40px;
-  top: 16px;
+  right: 84px;
+  top: 36px;
   display: flex;
   gap: 12px;
 }
 
 .admin-action {
-  height: 30px;
+  width: 120px;
+  height: 48px;
   padding: 0 14px;
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.18);
   color: rgba(255, 255, 255, 0.92);
   border: none;
+  font-size: 20px;
 }
 
 .admin-action:hover {
@@ -226,7 +228,7 @@ watch(() => systemStore.currentTarget, fetchSystems);
 
 .admin-main {
   position: relative;
-  padding: 20px 40px 44px;
+  padding: 32px 84px 45px;
 }
 
 .admin-grid {
@@ -237,10 +239,16 @@ watch(() => systemStore.currentTarget, fetchSystems);
 
 .admin-card {
   cursor: default;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  padding-bottom: 16px;
+  width: 420px;
+  height: 286px;
+  border-radius: 16px;
 }
 
 .admin-card-thumb {
-  height: 150px;
+  height: 222px;
   border-radius: 10px;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.06);
@@ -262,33 +270,34 @@ watch(() => systemStore.currentTarget, fetchSystems);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 40px;
+}
+
+.empty-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.6;
+}
+
+.admin-card-name-row {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .admin-card-name {
-  margin-top: 10px;
   color: rgba(255, 255, 255, 0.9);
-  font-size: 14px;
+  font-size: 20px;
+  line-height: 1;
+  flex: 1;
 }
 
-.admin-card-edit {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  width: 18px;
-  height: 18px;
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.18);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255, 255, 255, 0.92);
+
+.edit-icon {
+  width: 32px;
+  height: 32px;
   cursor: pointer;
-}
-
-.admin-card-edit:hover {
-  background: rgba(255, 255, 255, 0.28);
 }
 
 .admin-empty {
@@ -312,19 +321,23 @@ watch(() => systemStore.currentTarget, fetchSystems);
 
 @media (max-width: 980px) {
   .admin-top {
-    padding: 14px 18px 0;
+    padding: 24px 84px 0;
   }
+
   .admin-brand,
   .admin-actions {
     position: static;
   }
+
   .admin-actions {
     justify-content: center;
     margin-top: 12px;
   }
+
   .admin-main {
     padding: 16px 18px 40px;
   }
+
   .admin-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 18px;

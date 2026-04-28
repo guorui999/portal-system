@@ -17,36 +17,18 @@
         <div class="login-panel-sub">Unified Portal</div>
 
         <a-form :model="formData" layout="vertical" class="login-form">
-          <a-form-item
-            label="账号"
-            name="username"
-            :rules="[{ required: true, message: '请输入账号' }]"
-          >
-            <a-input
-              v-model:value="formData.username"
-              placeholder="请输入账号"
-              size="large"
-              class="login-input"
-            >
+          <a-form-item label="账号" name="username" :rules="[{ required: true, message: '请输入账号' }]">
+            <a-input v-model:value="formData.username" placeholder="请输入账号" size="large" class="login-input">
               <template #prefix>
-                <UserOutlined class="text-gray-400" />
+                <img :src="usernameIcon" class="input-icon" alt="username" />
               </template>
             </a-input>
           </a-form-item>
 
-          <a-form-item
-            label="密码"
-            name="password"
-            :rules="[{ required: true, message: '请输入密码' }]"
-          >
-            <a-input-password
-              v-model:value="formData.password"
-              placeholder="请输入密码"
-              size="large"
-              class="login-input"
-            >
+          <a-form-item label="密码" name="password" :rules="[{ required: true, message: '请输入密码' }]">
+            <a-input-password v-model:value="formData.password" placeholder="请输入密码" size="large" class="login-input">
               <template #prefix>
-                <LockOutlined class="text-gray-400" />
+                <img :src="passwordIcon" class="input-icon" alt="password" />
               </template>
             </a-input-password>
           </a-form-item>
@@ -56,15 +38,8 @@
           </div>
 
           <a-form-item class="login-submit">
-            <a-button
-              type="primary"
-              html-type="button"
-              size="large"
-              block
-              @click="onLogin"
-              :loading="authStore.isLoading"
-              class="login-btn"
-            >
+            <a-button type="primary" html-type="button" size="large" block @click="onLogin"
+              :loading="authStore.isLoading" class="login-btn">
               登录
             </a-button>
           </a-form-item>
@@ -79,7 +54,9 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { UserOutlined, LockOutlined } from '@ant-design/icons-vue';
+import usernameIcon from '@/assets/images/username.svg';
+import passwordIcon from '@/assets/images/password.svg';
+import bgImage from '@/assets/images/background.png';
 import { useAuthStore } from '@/stores/auth';
 import { message } from 'ant-design-vue';
 import type { LoginDto } from '../../types';
@@ -118,26 +95,26 @@ const onLogin = async () => {
 .login-page {
   min-height: 100vh;
   display: flex;
+  background: url('@/assets/images/background.png') no-repeat center center;
+  background-size: cover;
 }
 
 .login-left {
   flex: 1;
   position: relative;
-  background: radial-gradient(1200px 800px at 0% 0%, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 60%),
-    linear-gradient(180deg, #0b44b9 0%, #083a9f 100%);
   color: #fff;
   overflow: hidden;
 }
 
 .login-left-content {
   position: absolute;
-  top: 72px;
-  left: 80px;
+  top: 120px;
+  left: 120px;
   max-width: 540px;
 }
 
 .login-left-title {
-  font-size: 34px;
+  font-size: 48px;
   font-weight: 700;
   letter-spacing: 2px;
   line-height: 1.1;
@@ -145,13 +122,13 @@ const onLogin = async () => {
 
 .login-left-sub {
   margin-top: 10px;
-  font-size: 14px;
+  font-size: 20px;
   opacity: 0.8;
 }
 
 .login-left-desc {
   margin-top: 14px;
-  font-size: 12px;
+  font-size: 20px;
   line-height: 1.75;
   opacity: 0.85;
 }
@@ -170,36 +147,35 @@ const onLogin = async () => {
 }
 
 .login-right {
-  width: 44%;
-  min-width: 520px;
-  background: #0b44b9;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 12px;
+  height: 100vh;
 }
 
 .login-panel {
-  width: 520px;
-  height: 620px;
-  background: #fff;
+  width: 800px;
+  height: 100%;
   border-radius: 6px;
   box-shadow: 0 12px 34px rgba(0, 0, 0, 0.18);
-  padding: 78px 84px 0;
+  padding: 250px 140px 250px 140px;
+  background: rgba(255, 255, 255, 1);
 }
 
 .login-panel-title {
-  text-align: center;
-  font-size: 22px;
+  text-align: left;
+  font-size: 32px;
   font-weight: 700;
   color: #111827;
 }
 
 .login-panel-sub {
-  text-align: center;
-  font-size: 11px;
+  text-align: left;
+  font-size: 16px;
   color: #9ca3af;
-  margin-top: 6px;
-  margin-bottom: 40px;
+  margin-top: 12px;
+  margin-bottom: 80px;
 }
 
 .login-form :deep(.ant-form-item-label > label) {
@@ -236,9 +212,14 @@ const onLogin = async () => {
 }
 
 .login-footnote {
-  margin-top: 18px;
+  margin-top: 24px;
   text-align: center;
-  font-size: 10px;
+  font-size: 12px;
   color: #9ca3af;
+}
+
+.input-icon {
+  width: 16px;
+  height: 16px;
 }
 </style>

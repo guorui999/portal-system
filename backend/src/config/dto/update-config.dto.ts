@@ -12,7 +12,7 @@ export class UpdateConfigDto {
   @IsOptional()
   adminUrl?: string;
 
-  @ApiPropertyOptional({ description: "对应IP" })
+  @ApiPropertyOptional({ description: "对内系统地址" })
   @IsString()
   @IsOptional()
   ipAddress?: string;

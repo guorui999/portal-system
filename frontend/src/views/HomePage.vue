@@ -1,7 +1,5 @@
 <template>
-  <div class="portal-home">
-    <div class="portal-bg" aria-hidden="true"></div>
-
+  <div class="portal-home" :style="bgStyle">
     <div class="portal-content">
       <div class="portal-title">欢迎使用统一门户</div>
 
@@ -19,7 +17,7 @@
               :alt="system.name"
             />
             <div v-else class="portal-thumb-empty">
-              <PictureOutlined />
+              <img :src="nophotoImage" class="empty-image" alt="nophoto" />
             </div>
           </div>
           <div class="portal-name">{{ system.name }}</div>
@@ -35,8 +33,10 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { PictureOutlined } from '@ant-design/icons-vue';
+import nophotoImage from '@/assets/images/nophoto.png';
+import systemBgImage from '@/assets/images/system-bg.png';
 import { systemsApi } from '@/api/systems';
+import { configApi } from '@/api/config';
 import type { System, Target } from '../types';
 
 const route = useRoute();
@@ -44,6 +44,14 @@ const route = useRoute();
 const target = computed<Target>(() => route.meta.target as Target || 'sales');
 const systems = ref<System[]>([]);
 const loading = ref(false);
+const configBgImage = ref('');
+
+const bgStyle = computed(() => ({
+  backgroundImage: `url(${configBgImage.value ? getImageUrl(configBgImage.value) : systemBgImage})`,
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  backgroundRepeat: 'no-repeat',
+}));
 
 const getImageUrl = (url: string) => {
   if (url.startsWith('http')) return url;
@@ -65,7 +73,20 @@ const openSystem = (system: System) => {
   window.open(system.externalUrl, '_blank');
 };
 
-onMounted(fetchSystems);
+const fetchConfigBg = async () => {
+  try {
+    const config = await configApi.get(target.value);
+    configBgImage.value = config?.backgroundImage || '';
+  } catch (error) {
+    console.error('Failed to fetch config:', error);
+    configBgImage.value = '';
+  }
+};
+
+onMounted(() => {
+  fetchSystems();
+  fetchConfigBg();
+});
 </script>
 
 <style scoped>
@@ -73,19 +94,6 @@ onMounted(fetchSystems);
   min-height: 100vh;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(180deg, #0b44b9 0%, #083a9f 100%);
-}
-
-.portal-bg {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(1200px 680px at 70% 20%, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 60%),
-    radial-gradient(900px 500px at 0% 0%, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 55%),
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0, rgba(255, 255, 255, 0.05) 1px, rgba(255, 255, 255, 0) 1px, rgba(255, 255, 255, 0) 140px);
-  opacity: 0.55;
-  transform: skewX(-12deg) translateX(-8%);
-  transform-origin: center;
 }
 
 .portal-content {
@@ -135,8 +143,13 @@ onMounted(fetchSystems);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 40px;
+}
+
+.empty-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.6;
 }
 
 .portal-name {
