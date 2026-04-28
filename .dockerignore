@@ -1,0 +1,8 @@
+**/node_modules
+**/dist
+**/.turbo
+**/.cache
+**/.pnpm-store
+**/.env*
+portal-system-*.tar.gz
+*.log

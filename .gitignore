@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+*.tsbuildinfo
+
+# Environment variables
+.env.local
+.env.*.local
+
+# Uploads & Data
+uploads/
+!uploads/.gitkeep
+db_data/
+!db_data/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+.windsurf/
+.cursor/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Testing
+coverage/
+test-results/
+playwright-report/
+
+# Misc
+.cache/
+.temp/
+*.tgz
+.local/
+
+volumes/
+.docker-tmp/

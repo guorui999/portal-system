@@ -1,0 +1,13 @@
+{
+  "name": "portal-system",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "cd backend && npm run dev & cd frontend && npm run dev",
+    "build": "cd backend && npm run build && cd frontend && npm run build",
+    "docker:up": "docker compose -f docker-compose.dev.yml up -d",
+    "docker:down": "docker compose -f docker-compose.dev.yml down",
+    "docker:prod:up": "docker compose -f docker-compose.prod.yml up -d --build",
+    "docker:save": "docker compose -f docker-compose.prod.yml build && docker save $(docker compose -f docker-compose.prod.yml config --images | sort -u) -o prod-images.tar"
+  }
+}

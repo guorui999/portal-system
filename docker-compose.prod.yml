@@ -1,0 +1,94 @@
+services:
+  mysql-prod:
+    image: mysql:8.0      # 建议锁定大版本，latest 存在不可预期升级风险
+    container_name: mysql-prod
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-admin}
+      MYSQL_DATABASE: portal_system
+    # 移除主机的端口暴露，仅内部通信
+    # ports:
+    #   - "3306:3306"
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+      - --default-authentication-plugin=mysql_native_password
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test:
+        - CMD
+        - mysqladmin
+        - ping
+        - -h
+        - localhost
+        - -u
+        - root
+        - -p$$MYSQL_ROOT_PASSWORD   # 安全引用环境变量
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: always
+    networks:
+      - app-network
+
+  db-init:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: db-init
+    container_name: portal-db-init
+    environment:
+      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-admin}@mysql-prod:3306/portal_system
+    command: >
+      sh -c "npx prisma migrate deploy && npx tsx backend/scripts/seed.ts"
+    depends_on:
+      mysql-prod:
+        condition: service_healthy
+    restart: "no"
+    networks:
+      - app-network
+
+  nest-app:
+    container_name: nest-app
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: production
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-admin}@mysql-prod:3306/portal_system
+      JWT_SECRET: ${JWT_SECRET}            # 从 .env 加载
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      mysql-prod:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
+    restart: always
+    networks:
+      app-network:
+        aliases:
+          - backend
+
+  frontend-app:
+    container_name: frontend-app
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "80:80"
+    # 前端可独立启动，无需等待后端
+    restart: always
+    networks:
+      - app-network
+
+volumes:
+  mysql-data:
+  uploads:
+
+networks:
+  app-network:
+    driver: bridge    # 不再依赖外部网络

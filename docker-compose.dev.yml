@@ -1,0 +1,86 @@
+version: "3.8"
+
+# 公共环境变量（锚点）
+x-db-env: &db-env
+  DB_HOST: mysql
+  DB_PORT: 3306
+  DB_USERNAME: root
+  DB_PASSWORD: ${MYSQL_ROOT_PASSWORD:-admin}
+  DB_DATABASE: ${MYSQL_DATABASE:-portal_system}
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-dev
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-admin}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-portal_system}
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: always
+
+  db-init:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: db-init
+    container_name: portal-db-init
+    environment:
+      <<: *db-env
+    command: ["npx", "ts-node", "backend/scripts/seed.ts"]
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: "no"   # 正常退出后不重启
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: dev
+    container_name: portal-backend
+    environment:
+      <<: *db-env
+      JWT_SECRET: ${JWT_SECRET:-your-secure-jwt-secret-change-this-in-production}
+      PORT: 3000
+    volumes:
+      - ./backend/src:/app/backend/src
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/uploads:/app/uploads
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
+    command: ["npm", "run", "dev"]
+
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      target: dev
+    container_name: portal-frontend
+    environment:
+      DOCKER: "true"
+    volumes:
+      - ./frontend:/app/frontend          # 挂载整个前端目录，便于 HMR
+      - /app/frontend/node_modules        # 匿名卷，避免覆盖
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    depends_on:
+      - backend
+
+networks:
+  default:
+    name: common-network
+    external: true
