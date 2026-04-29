@@ -31,7 +31,7 @@
                   </template>
                 </div>
               </a-upload>
-              <div class="upload-tip">背景图片格式要求为：png/jpg</div>
+              <div v-if="!formData.backgroundImage" class="upload-tip">背景图片格式要求为：png/jpg</div>
 
               <div v-if="formData.backgroundImage" class="upload-remove" @click="formData.backgroundImage = ''">
                 <img :src="deleteIcon" class="delete-icon" alt="delete" />
@@ -83,6 +83,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:open': [value: boolean];
+  'saved': [];
 }>();
 
 const activeTab = ref('page');
@@ -160,6 +161,7 @@ const handleSave = async () => {
     
     await configApi.update(props.target, data);
     message.success('保存成功');
+    emit('saved');
     emit('update:open', false);
   } catch (error) {
     message.error('保存失败');

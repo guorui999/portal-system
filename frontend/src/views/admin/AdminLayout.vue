@@ -16,7 +16,7 @@
 
     <main class="admin-main">
       <div class="admin-grid">
-        <div v-for="system in systems" :key="system.id" class="admin-card">
+        <div v-for="system in systems" :key="system.id" class="admin-card" @click="openSystem(system)">
           <div class="admin-card-thumb">
             <img v-if="system.imageUrl" :src="getImageUrl(system.imageUrl)" :alt="system.name" />
             <div v-else class="admin-card-thumb-empty">
@@ -39,7 +39,7 @@
       @delete="handleModalDelete" @cancel="handleModalCancel" />
 
     <!-- Config Modal -->
-    <ConfigModal v-model:open="showConfigModal" :target="systemStore.currentTarget" />
+    <ConfigModal v-model:open="showConfigModal" :target="systemStore.currentTarget" @saved="fetchConfigBg" />
   </div>
 </template>
 
@@ -125,6 +125,11 @@ const handleModalSubmit = async (data: any) => {
   } catch (error) {
     message.error('操作失败');
   }
+};
+
+const openSystem = (system: System) => {
+  const url = system.externalUrl.startsWith('http') ? system.externalUrl : `https://${system.externalUrl}`;
+  window.open(url, '_blank');
 };
 
 const editSystem = (system: System) => {
@@ -229,6 +234,8 @@ watch(() => systemStore.currentTarget, () => {
 .admin-main {
   position: relative;
   padding: 32px 84px 45px;
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
 }
 
 .admin-grid {
@@ -238,7 +245,7 @@ watch(() => systemStore.currentTarget, () => {
 }
 
 .admin-card {
-  cursor: default;
+  cursor: pointer;
   background: rgba(255, 255, 255, 0.1);
   padding: 12px;
   padding-bottom: 16px;

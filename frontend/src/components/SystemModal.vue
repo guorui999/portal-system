@@ -29,7 +29,7 @@
               </template>
             </div>
           </a-upload>
-          <div class="upload-tip">背景图片格式要求为：png/jpg</div>
+          <div v-if="!formData.imageUrl"  class="upload-tip">背景图片格式要求为：png/jpg</div>
 
           <div v-if="formData.imageUrl" class="upload-remove" @click="formData.imageUrl = ''">
             <img :src="deleteIcon" class="delete-icon" alt="delete" />
@@ -52,7 +52,7 @@ import uploadIcon from '@/assets/images/upload.svg';
 import deleteIcon from '@/assets/images/delete.svg';
 import editIcon from '@/assets/images/edit.svg';
 import nophotoImage from '@/assets/images/nophoto.png';
-import { message } from 'ant-design-vue';
+import { message, Modal } from 'ant-design-vue';
 import type { FormInstance } from 'ant-design-vue';
 import { uploadApi } from '@/api/upload';
 import type { System } from '../types';
@@ -115,9 +115,18 @@ const handleCancel = () => {
 };
 
 const handleDelete = () => {
-  if (props.system?.id) {
-    emit('delete', props.system.id);
-  }
+  if (!props.system?.id) return;
+  Modal.confirm({
+    title: '确认删除',
+    content: `确定要删除系统「${props.system.name}」吗？此操作不可恢复。`,
+    okText: '确定删除',
+    okType: 'danger',
+    cancelText: '取消',
+    centered: true,
+    onOk: () => {
+      emit('delete', props.system!.id);
+    },
+  });
 };
 
 const handleSubmit = async () => {

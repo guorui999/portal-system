@@ -1,7 +1,7 @@
 <template>
   <div class="portal-home" :style="bgStyle">
+    <div class="portal-title">欢迎使用统一门户</div>
     <div class="portal-content">
-      <div class="portal-title">欢迎使用统一门户</div>
 
       <div class="portal-grid">
         <div
@@ -70,7 +70,8 @@ const fetchSystems = async () => {
 };
 
 const openSystem = (system: System) => {
-  window.open(system.externalUrl, '_blank');
+  const url = system.externalUrl.startsWith('http') ? system.externalUrl : `https://${system.externalUrl}`;
+  window.open(url, '_blank');
 };
 
 const fetchConfigBg = async () => {
@@ -98,13 +99,15 @@ onMounted(() => {
 
 .portal-content {
   position: relative;
-  padding: 36px 56px 48px;
+  padding: 36px 84px 48px;
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
 }
 
 .portal-title {
   text-align: center;
   color: #fff;
-  font-size: 34px;
+  font-size: 48px;
   font-weight: 800;
   letter-spacing: 4px;
   margin-bottom: 24px;
@@ -119,15 +122,20 @@ onMounted(() => {
 
 .portal-item {
   cursor: pointer;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  padding-bottom: 16px;
+  border-radius: 16px;
 }
 
 .portal-thumb {
-  height: 150px;
+  height: 222px;
   border-radius: 10px;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.06);
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.24);
   border: 1px solid rgba(255, 255, 255, 0.12);
+  position: relative;
 }
 
 .portal-thumb img {
@@ -155,7 +163,8 @@ onMounted(() => {
 .portal-name {
   margin-top: 10px;
   color: rgba(255, 255, 255, 0.9);
-  font-size: 14px;
+  font-size: 20px;
+  line-height: 1;
 }
 
 .portal-empty {
@@ -179,7 +188,7 @@ onMounted(() => {
 
 @media (max-width: 980px) {
   .portal-content {
-    padding: 24px 18px 40px;
+    padding: 24px 84px 40px;
   }
   .portal-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
