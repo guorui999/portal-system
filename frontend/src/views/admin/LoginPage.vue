@@ -56,7 +56,6 @@ import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import usernameIcon from '@/assets/images/username.svg';
 import passwordIcon from '@/assets/images/password.svg';
-import bgImage from '@/assets/images/background.png';
 import { useAuthStore } from '@/stores/auth';
 import { message } from 'ant-design-vue';
 import type { LoginDto } from '../../types';

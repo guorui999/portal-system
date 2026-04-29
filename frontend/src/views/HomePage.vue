@@ -110,7 +110,9 @@ onMounted(() => {
   font-size: 48px;
   font-weight: 800;
   letter-spacing: 4px;
-  margin-bottom: 24px;
+  margin-top: 24px;
+  margin-bottom: 32px;
+  line-height: 1;
 }
 
 .portal-grid {

@@ -50,7 +50,6 @@
 import { ref, watch } from 'vue';
 import uploadIcon from '@/assets/images/upload.svg';
 import deleteIcon from '@/assets/images/delete.svg';
-import editIcon from '@/assets/images/edit.svg';
 import nophotoImage from '@/assets/images/nophoto.png';
 import { message, Modal } from 'ant-design-vue';
 import type { FormInstance } from 'ant-design-vue';
