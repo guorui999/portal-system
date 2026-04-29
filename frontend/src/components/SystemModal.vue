@@ -90,7 +90,8 @@ const rules = {
 
 const getImageUrl = (url: string) => {
   if (url.startsWith('http')) return url;
-  return `/api${url}`;
+  if (url.startsWith('/uploads')) return `/api${url}`;
+  return url;
 };
 
 const handleUpload = async ({ file }: any) => {

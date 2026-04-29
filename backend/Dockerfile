@@ -27,8 +27,8 @@ COPY backend/package*.json ./
 RUN npm ci --production && npm cache clean --force
 
 COPY --from=builder /app/backend/dist ./dist
-RUN mkdir -p uploads && chown -R node:node uploads
+RUN mkdir -p /app/uploads && chown -R node:node /app/uploads
 
 EXPOSE 3000
 USER node
-CMD ["node", "dist/main"]
+CMD ["node", "dist/src/main"]

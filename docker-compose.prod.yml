@@ -39,9 +39,12 @@ services:
       target: db-init
     container_name: portal-db-init
     environment:
-      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-admin}@mysql-prod:3306/portal_system
+      DB_HOST: mysql-prod
+      DB_USERNAME: root
+      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD:-admin}
+      DB_DATABASE: portal_system
     command: >
-      sh -c "npx prisma migrate deploy && npx tsx backend/scripts/seed.ts"
+      sh -c "npx tsx scripts/seed.ts"
     depends_on:
       mysql-prod:
         condition: service_healthy
@@ -60,7 +63,10 @@ services:
       - "3000:3000"
     environment:
       NODE_ENV: production
-      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-admin}@mysql-prod:3306/portal_system
+      DB_HOST: mysql-prod
+      DB_USERNAME: root
+      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD:-admin}
+      DB_DATABASE: portal_system
       JWT_SECRET: ${JWT_SECRET}            # 从 .env 加载
     volumes:
       - uploads:/app/uploads
@@ -82,7 +88,7 @@ services:
       context: .
       dockerfile: frontend/Dockerfile
     ports:
-      - "80:80"
+      - "5173:80"
     # 前端可独立启动，无需等待后端
     restart: always
     networks:

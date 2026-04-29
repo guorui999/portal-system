@@ -42,7 +42,7 @@ async function seed() {
     if (!existingConfig) {
       await configRepo.save(configRepo.create({
         target: 'sales',
-        backgroundImage: '/default-bg.jpg',
+        backgroundImage: null,
         adminUrl: 'http://localhost:3000',
         ipAddress: null,
         externalSystemUrl: null,

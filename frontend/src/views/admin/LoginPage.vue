@@ -138,11 +138,6 @@ const onLogin = async () => {
   bottom: 40px;
   width: 560px;
   height: 360px;
-  background: radial-gradient(220px 160px at 50% 55%, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 60%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0));
-  border-radius: 18px;
-  filter: blur(0px);
-  opacity: 0.55;
 }
 
 .login-right {

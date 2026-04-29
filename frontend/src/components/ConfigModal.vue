@@ -152,7 +152,7 @@ const handleSave = async () => {
   loading.value = true;
   try {
     const data: any = {};
-    data.backgroundImage = formData.value.backgroundImage;
+    data.backgroundImage = formData.value.backgroundImage || null;
     if (formData.value.ipAddress) {
       data.ipAddress = formData.value.ipAddress;
       data.adminUrl = computedAdminUrl.value;

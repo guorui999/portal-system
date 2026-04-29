@@ -16,7 +16,7 @@
 
 - **前端**: Vue3 + Vite + Pinia + Ant Design Vue + TailwindCSS
 - **后端**: NestJS + TypeORM + MySQL + JWT + Multer
-- **部署**: Docker Compose + Docker 多阶段构建
+- **部署**: docker-compose + Docker 多阶段构建
 - **包管理**: npm (前后端独立管理依赖)
 
 ## 👤 默认账户
@@ -69,7 +69,7 @@ npm run docker:save
 # 3. 导入镜像并启动
 docker load -i prod-images.tar 加载docker
 docker images 确认导入成功
-docker compose -f docker-compose.prod.yml up -d --build 启动docker
+docker-compose -f docker-compose.prod.yml up -d --build 启动docker
 ```
 
 ### 🏗️ 构建优化
@@ -85,10 +85,10 @@ docker compose -f docker-compose.prod.yml up -d --build 启动docker
 docker logs portal-backend
 
 # 重新构建
-docker compose -f docker-compose.dev.yml build --no-cache
+docker-compose -f docker-compose.dev.yml build --no-cache
 
 # 清理资源
-docker compose -f docker-compose.dev.yml down -v
+docker-compose -f docker-compose.dev.yml down -v
 ```
 
 ## 📁 项目结构
