@@ -12,7 +12,8 @@
       "Read(//d/d/projects/portal-system/backend/**)",
       "Bash(curl -s http://localhost:3000/systems?target=sales)",
       "Bash(docker exec *)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/api/systems?target=sales)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/api/systems?target=sales)",
+      "Bash(curl -s \"http://192.168.0.188:5173/api/systems?target=test\")"
     ]
   }
 }
