@@ -9,7 +9,7 @@ export class PortalConfig {
   target: string; // 'sales' | 'test'
 
   @Column({ type: 'varchar', length: 500, nullable: true })
-  backgroundImage: string;
+  backgroundImage: string | null;
 
   @Column({ type: 'varchar', length: 500, nullable: true })
   adminUrl: string;
