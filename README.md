@@ -67,8 +67,9 @@ npm run docker:save
 
 # 2. 传输到内网服务器
 # 3. 导入镜像并启动
-docker load -i prod-images.tar
-npm run docker:prod:up
+docker load -i prod-images.tar 加载docker
+docker images 确认导入成功
+docker compose -f docker-compose.prod.yml up -d --build 启动docker
 ```
 
 ### 🏗️ 构建优化

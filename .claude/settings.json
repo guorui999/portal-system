@@ -3,7 +3,11 @@
     "allow": [
       "Bash(npx vue-tsc *)",
       "Bash(npx vite *)",
-      "Bash(docker compose *)"
+      "Bash(docker compose *)",
+      "Bash(npm config *)",
+      "Bash(xargs docker *)",
+      "Bash(node scripts/docker-save.js)",
+      "Bash(powershell -NoProfile -Command \"docker save $\\(docker compose -f docker-compose.prod.yml config --images)"
     ]
   }
 }
