@@ -6,8 +6,8 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-admin}
       MYSQL_DATABASE: portal_system
     # 移除主机的端口暴露，仅内部通信
-    # ports:
-    #   - "3306:3306"
+    ports:
+      - "3306:3306"
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_general_ci
