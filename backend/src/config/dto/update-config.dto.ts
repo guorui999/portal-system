@@ -5,7 +5,7 @@ export class UpdateConfigDto {
   @ApiPropertyOptional({ description: "背景图片路径" })
   @IsString()
   @IsOptional()
-  backgroundImage?: string;
+  backgroundImage?: string | null;
 
   @ApiPropertyOptional({ description: "管理端地址" })
   @IsString()

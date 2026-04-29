@@ -51,7 +51,7 @@ export interface UpdateSystemDto {
 }
 
 export interface UpdatePortalConfigDto {
-  backgroundImage?: string;
+  backgroundImage?: string | null;
   adminUrl?: string;
   ipAddress?: string;
   externalSystemUrl?: string;
