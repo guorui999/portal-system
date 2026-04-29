@@ -47,7 +47,7 @@ export interface UpdateSystemDto {
   name?: string;
   type?: SystemType;
   externalUrl?: string;
-  imageUrl?: string;
+  imageUrl?: string | null;
 }
 
 export interface UpdatePortalConfigDto {

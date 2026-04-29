@@ -24,5 +24,5 @@ export class UpdateSystemDto {
   @ApiPropertyOptional({ description: "封面图片路径" })
   @IsString()
   @IsOptional()
-  imageUrl?: string;
+  imageUrl?: string | null;
 }

@@ -8,7 +8,8 @@
       "Bash(xargs docker *)",
       "Bash(node scripts/docker-save.js)",
       "Bash(powershell -NoProfile -Command \"docker save $\\(docker compose -f docker-compose.prod.yml config --images)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Read(//d/d/projects/portal-system/backend/**)"
     ]
   }
 }
