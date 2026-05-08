@@ -85,10 +85,10 @@ docker-compose -f docker-compose.prod.yml up -d --build 启动docker
 docker logs portal-backend
 
 # 重新构建
-docker-compose -f docker-compose.dev.yml build --no-cache
+docker-compose -f docker-compose.prod.yml build --no-cache
 
 # 清理资源
-docker-compose -f docker-compose.dev.yml down -v
+docker-compose -f docker-compose.prod.yml down -v
 ```
 
 ## 📁 项目结构

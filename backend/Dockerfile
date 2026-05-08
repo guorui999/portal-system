@@ -7,16 +7,17 @@ COPY backend/package*.json ./
 RUN npm ci
 COPY backend .
 
-# ---------- 数据库初始化阶段 ----------
-FROM dev-deps AS db-init
-
 # ---------- 开发阶段 ----------
 FROM dev-deps AS dev
 EXPOSE 3000
 CMD ["npm", "run", "dev"]
+
 # ---------- 构建阶段 ----------
 FROM dev-deps AS builder
 RUN npm run build
+
+# ---------- 数据库初始化阶段 ----------
+FROM builder AS db-init
 
 # ---------- 生产阶段 ----------
 FROM ${NODE_IMAGE} AS production
@@ -31,4 +32,4 @@ RUN mkdir -p /app/uploads && chown -R node:node /app/uploads
 
 EXPOSE 3000
 USER node
-CMD ["node", "dist/src/main"]
+CMD ["node", "dist/src/main.js"]

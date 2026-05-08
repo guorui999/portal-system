@@ -44,7 +44,7 @@ services:
       DB_PASSWORD: ${MYSQL_ROOT_PASSWORD:-admin}
       DB_DATABASE: portal_system
     command: >
-      sh -c "npx --no-install tsx scripts/seed.ts"
+      node dist/scripts/seed.js
     depends_on:
       mysql-prod:
         condition: service_healthy
