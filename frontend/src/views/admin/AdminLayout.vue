@@ -169,7 +169,7 @@ watch(() => systemStore.currentTarget, () => {
 
 <style scoped>
 .admin-page {
-  min-height: 100vh;
+  height: 100%;
   position: relative;
   overflow: hidden;
 }
@@ -235,7 +235,7 @@ watch(() => systemStore.currentTarget, () => {
 .admin-main {
   position: relative;
   padding: 32px 84px 45px;
-  max-height: calc(100vh - 150px);
+  max-height: calc(100% - 150px);
   overflow-y: auto;
 }
 
@@ -321,34 +321,4 @@ watch(() => systemStore.currentTarget, () => {
   padding: 80px 0;
 }
 
-@media (max-width: 1280px) {
-  .admin-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 980px) {
-  .admin-top {
-    padding: 24px 84px 0;
-  }
-
-  .admin-brand,
-  .admin-actions {
-    position: static;
-  }
-
-  .admin-actions {
-    justify-content: center;
-    margin-top: 12px;
-  }
-
-  .admin-main {
-    padding: 16px 18px 40px;
-  }
-
-  .admin-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px;
-  }
-}
 </style>
