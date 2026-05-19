@@ -92,7 +92,7 @@ const onLogin = async () => {
 
 <style scoped>
 .login-page {
-  min-height: 100vh;
+  height: 100%;
   display: flex;
   background: url('@/assets/images/background.png') no-repeat center center;
   background-size: cover;
@@ -145,7 +145,7 @@ const onLogin = async () => {
   align-items: center;
   justify-content: center;
   padding: 12px;
-  height: 100vh;
+  height: 100%;
 }
 
 .login-panel {
